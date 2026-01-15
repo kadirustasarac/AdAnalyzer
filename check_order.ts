@@ -1,0 +1,1 @@
+import { prisma } from './lib/prisma'; async function main() { const c = await prisma.campaign.findMany({ take: 5, select: { campaignName: true, rowOrder: true } }); console.log(JSON.stringify(c, null, 2)); } main();  

@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Key Identifiers
+  campaignName     String
+  labelsOnCampaign String
+
+  // Campaign Level Metrics
+  campBudget Float // Camp. Budget
+  campCost   Float // Camp. Cost (MTD)
+  camp3dCost Float // Camp. 3D Cost
+  campConv   Int   // Camp. Conv
+  campCpa    Float // Camp. CPA
+  campTcpa   Float // Camp. tCPA
+  
+  // Cluster Level
+  mtdClusterSpendPercent Float // MTD Cluster Spend (%)
+
+  // Label Level Metrics
+  labelBudget          Float // Label Budget
+  labelCost            Float // Label Cost (MTD)
+  label3dCost          Float // Label 3D Cost
+  labelConv            Int   // Label Conv
+  labelRemainingBudget Float // Label Remaining Budget (Daily)
+  labelKpiValue        Float // Label KPI Value
+  labelCpa             Float // Label CPA
+
+  // Computed Optimization Values (Nullable as they are calculated later)
+  newDailyBudget Float?
+  newTargetCpa   Float?
+
+  // To preserve Excel row order
+  rowOrder Int @default(0)
+
+  // Constraint: Ensure unique combination if needed, otherwise just ID. 
+  // User asked "UPDATE same label and same campaign records". 
+  // So the combination of campaignName + labelsOnCampaign should likely be unique.
+  @@unique([campaignName, labelsOnCampaign])
+}
